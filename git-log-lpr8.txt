@@ -1,4 +1,28 @@
-﻿commit 04d8030f6d6ea98b803102efea6ad94b222a4daf
+﻿commit db6cc999b309e26e9cfc8b0e3e5d322d444907de
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 02:27:43 +0600
+
+    ЛПР8: визуальное оформление кибер-клуба
+
+ resources/views/catalog/index.blade.php | 180 +++++++++++++++++++-----------
+ resources/views/catalog/show.blade.php  | 140 +++++++++++++++++-------
+ resources/views/catalog/stats.blade.php |  67 +++++++-----
+ resources/views/catalog/zones.blade.php |  26 +++--
+ resources/views/errors/404.blade.php    |  33 ++++--
+ resources/views/feedback.blade.php      |  47 +++++---
+ resources/views/layouts/app.blade.php   | 187 +++++++++++++++++++++++++++++---
+ 7 files changed, 497 insertions(+), 183 deletions(-)
+
+commit 6f153a9f6c6ad7b4662db479c4b78ad46efdc642
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 02:03:54 +0600
+
+    ЛПР8: файл истории git-log-lpr8.txt
+
+ git-log-lpr8.txt | 130 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 130 insertions(+)
+
+commit 04d8030f6d6ea98b803102efea6ad94b222a4daf
 Author: Адиль <adils@example.com>
 Date:   2026-10-12 02:03:31 +0600
 
