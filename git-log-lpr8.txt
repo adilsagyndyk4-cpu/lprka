@@ -1,0 +1,130 @@
+﻿commit 04d8030f6d6ea98b803102efea6ad94b222a4daf
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 02:03:31 +0600
+
+    ЛПР8: тесты и отчет
+
+ REPORT.md                     | 154 ++++++++++++++++++++++++++++++++++++++++++
+ tests/Feature/ExampleTest.php |   6 +-
+ 2 files changed, 158 insertions(+), 2 deletions(-)
+
+commit 93b37628c346ad571cda48eef2891844055c96c1
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 02:01:02 +0600
+
+    ЛПР8 п.6: POST-форма
+
+ resources/views/feedback.blade.php |  23 ++++++++
+ tests/Feature/Lab8Test.php         | 114 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 137 insertions(+)
+
+commit bdfeebc590c33da804cd7ac71abf3b61f940c865
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 02:00:13 +0600
+
+    ЛПР8 п.5: Blade-шаблоны
+
+ resources/views/catalog/index.blade.php | 75 +++++++++++++++++++++++++++++++++
+ resources/views/catalog/show.blade.php  | 54 ++++++++++++++++++++++++
+ resources/views/catalog/stats.blade.php | 63 +++++++++++++++++++++++++++
+ resources/views/catalog/zones.blade.php | 28 ++++++++++++
+ resources/views/errors/404.blade.php    | 20 +++++++++
+ resources/views/layouts/app.blade.php   | 39 +++++++++++++++++
+ 6 files changed, 279 insertions(+)
+
+commit 7ad281ee848bddf831060473e641b97974214210
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 01:58:59 +0600
+
+    ЛПР8 п.4: контроллер каталога
+
+ app/Http/Controllers/CatalogController.php | 196 +++++++++++++++++++++++++++++
+ app/Http/Controllers/PageController.php    |  23 ++++
+ routes/web.php                             |  16 ++-
+ 3 files changed, 233 insertions(+), 2 deletions(-)
+
+commit a518bfebb4e1ed84c5580a59909bb638e2efa163
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 01:57:22 +0600
+
+    ЛПР8 п.3: маршрут с параметром
+
+ routes/web.php | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit cda47fc8063654519c8977470b395ef03fac313c
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 01:55:42 +0600
+
+    ЛПР8 п.2: настройки .env и config/lab.php
+
+ .env.example   | 10 ++++++++--
+ config/lab.php |  9 +++++++++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+commit fee6b2d8d21ccacd402dc8baf9463e986832403c
+Author: Адиль <adils@example.com>
+Date:   2026-10-12 01:54:23 +0600
+
+    ЛПР8 п.1: установка Laravel
+
+ .editorconfig                                      |   18 +
+ .env.example                                       |   65 +
+ .gitattributes                                     |   11 +
+ .gitignore                                         |   27 +
+ .npmrc                                             |    2 +
+ AGENTS.md                                          |   47 +
+ CLAUDE.md                                          |   47 +
+ README.md                                          |   58 +
+ app/Http/Controllers/Controller.php                |    8 +
+ app/Models/User.php                                |   32 +
+ app/Providers/AppServiceProvider.php               |   24 +
+ artisan                                            |   18 +
+ bootstrap/app.php                                  |   21 +
+ bootstrap/cache/.gitignore                         |    2 +
+ bootstrap/providers.php                            |    7 +
+ composer.json                                      |   87 +
+ composer.lock                                      | 8737 ++++++++++++++++++++
+ config/app.php                                     |  126 +
+ config/auth.php                                    |  117 +
+ config/cache.php                                   |  136 +
+ config/database.php                                |  184 +
+ config/filesystems.php                             |   80 +
+ config/logging.php                                 |  140 +
+ config/mail.php                                    |  118 +
+ config/queue.php                                   |  129 +
+ config/services.php                                |   38 +
+ config/session.php                                 |  233 +
+ database/.gitignore                                |    1 +
+ database/factories/UserFactory.php                 |   45 +
+ .../0001_01_01_000000_create_users_table.php       |   49 +
+ .../0001_01_01_000001_create_cache_table.php       |   35 +
+ .../0001_01_01_000002_create_jobs_table.php        |   59 +
+ database/seeders/DatabaseSeeder.php                |   25 +
+ package.json                                       |   19 +
+ phpunit.xml                                        |   36 +
+ public/.htaccess                                   |   25 +
+ public/favicon.ico                                 |    0
+ public/index.php                                   |   20 +
+ public/robots.txt                                  |    2 +
+ resources/css/app.css                              |    9 +
+ resources/js/app.js                                |    1 +
+ resources/views/welcome.blade.php                  |  223 +
+ routes/console.php                                 |    8 +
+ routes/web.php                                     |    7 +
+ storage/app/.gitignore                             |    4 +
+ storage/app/private/.gitignore                     |    2 +
+ storage/app/public/.gitignore                      |    2 +
+ storage/framework/.gitignore                       |   10 +
+ storage/framework/cache/.gitignore                 |    4 +
+ storage/framework/cache/data/.gitignore            |    2 +
+ storage/framework/cache/locks/.gitignore           |    2 +
+ storage/framework/sessions/.gitignore              |    2 +
+ storage/framework/testing/.gitignore               |    2 +
+ storage/framework/views/.gitignore                 |    2 +
+ storage/logs/.gitignore                            |    2 +
+ tests/Feature/ExampleTest.php                      |   19 +
+ tests/TestCase.php                                 |   10 +
+ tests/Unit/ExampleTest.php                         |   16 +
+ vite.config.js                                     |   24 +
+ 59 files changed, 11179 insertions(+)
