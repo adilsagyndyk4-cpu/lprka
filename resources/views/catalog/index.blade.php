@@ -1,75 +1,125 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>{{ $title }}</h1>
-        <a href="{{ route('catalog.stats') }}" class="btn btn-outline-info">📊 Статистика</a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h1 class="display-6 mb-1 text-white">{{ $title }}</h1>
+            <p class="text-secondary small mb-0">Каталог игровых мест киберспортивного клуба с актуальными конфигурациями</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('catalog.zone') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-grid me-1"></i>Все зоны
+            </a>
+            <a href="{{ route('catalog.stats') }}" class="btn btn-outline-info btn-sm">
+                <i class="bi bi-bar-chart-line me-1"></i>Статистика
+            </a>
+        </div>
     </div>
 
-    <form method="GET" action="{{ route('catalog.index') }}" class="row g-2 mb-4">
-        <div class="col-md-5">
-            <input type="text" name="q" value="{{ $search }}" class="form-control" placeholder="Поиск по инвентарному номеру, CPU или коду...">
-        </div>
-        <div class="col-md-4">
-            <select name="sort" class="form-select">
-                <option value="inventory_number" @selected($sort === 'inventory_number')>По инвентарному номеру (А-Я)</option>
-                <option value="ram_gb" @selected($sort === 'ram_gb')>По объему RAM</option>
-                <option value="hour_price" @selected($sort === 'hour_price')>По цене за час</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button class="btn btn-secondary flex-grow-1">Найти</button>
-            @if ($search || $sort !== 'inventory_number')
-                <a href="{{ route('catalog.index') }}" class="btn btn-outline-secondary">Сброс</a>
-            @endif
-        </div>
-    </form>
+    <!-- Фильтр и поиск -->
+    <div class="card card-cyber p-3 mb-4">
+        <form method="GET" action="{{ route('catalog.index') }}" class="row g-2 align-items-center">
+            <div class="col-lg-5 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ $search }}" class="form-control" placeholder="Поиск по инв. номеру, CPU или коду...">
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">
+                        <i class="bi bi-arrow-down-up"></i>
+                    </span>
+                    <select name="sort" class="form-select">
+                        <option value="inventory_number" @selected($sort === 'inventory_number')>По инвентарному номеру (А-Я)</option>
+                        <option value="ram_gb" @selected($sort === 'ram_gb')>По объему RAM (по возрастанию)</option>
+                        <option value="hour_price" @selected($sort === 'hour_price')>По цене за час (по возрастанию)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-cyber-primary flex-grow-1">
+                    <i class="bi bi-funnel me-1"></i>Найти
+                </button>
+                @if ($search || $sort !== 'inventory_number')
+                    <a href="{{ route('catalog.index') }}" class="btn btn-outline-secondary" title="Сбросить фильтр">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>№</th>
-                    <th>Инвентарный №</th>
-                    <th>Зона (зал)</th>
-                    <th>Процессор</th>
-                    <th>ОЗУ</th>
-                    <th>Цена в час</th>
-                    <th>Категория</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($computers as $computer)
+    <!-- Таблица ПК -->
+    <div class="card card-cyber overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-cyber align-middle mb-0">
+                <thead>
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>
-                            <a href="{{ route('catalog.show', ['id' => $computer['id']]) }}" class="fw-bold text-decoration-none">
-                                {{ $computer['inventory_number'] }}
-                            </a>
-                            <span class="text-muted small">({{ $computer['code'] }})</span>
-                        </td>
-                        <td>
-                            <a href="{{ route('catalog.zone', ['zone' => $computer['zone']]) }}" class="badge bg-primary text-decoration-none">
-                                {{ $computer['zone'] }} (эт. {{ $computer['floor'] }})
-                            </a>
-                        </td>
-                        <td>{{ $computer['cpu'] }}</td>
-                        <td>{{ $computer['ram_gb'] }} ГБ</td>
-                        <td>{{ number_format($computer['hour_price'], 2, ',', ' ') }} ₽</td>
-                        <td>
-                            @if ($computer['is_vip'])
-                                <span class="badge bg-warning text-dark">VIP</span>
-                            @else
-                                <span class="badge bg-secondary">Обычный</span>
-                            @endif
-                        </td>
+                        <th class="text-center" style="width: 50px;">№</th>
+                        <th>Инвентарный №</th>
+                        <th>Зона (зал)</th>
+                        <th>Процессор</th>
+                        <th>ОЗУ</th>
+                        <th>Цена в час</th>
+                        <th class="text-center">Категория</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4">Компьютеры не найдены.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($computers as $computer)
+                        <tr>
+                            <td class="text-center text-secondary small">{{ $loop->iteration }}</td>
+                            <td>
+                                <a href="{{ route('catalog.show', ['id' => $computer['id']]) }}" class="text-info fw-bold text-decoration-none">
+                                    {{ $computer['inventory_number'] }}
+                                </a>
+                                <span class="badge bg-dark border border-secondary text-secondary font-monospace ms-1 small">
+                                    {{ $computer['code'] }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ route('catalog.zone', ['zone' => $computer['zone']]) }}" class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle text-decoration-none">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ $computer['zone'] }} (эт. {{ $computer['floor'] }})
+                                </a>
+                            </td>
+                            <td>
+                                <span class="text-light">
+                                    <i class="bi bi-cpu text-secondary me-1"></i>{{ $computer['cpu'] }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                    <i class="bi bi-memory me-1"></i>{{ $computer['ram_gb'] }} ГБ
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success">
+                                    {{ number_format($computer['hour_price'], 2, ',', ' ') }} ₽
+                                </span>
+                                <span class="text-secondary small">/ч</span>
+                            </td>
+                            <td class="text-center">
+                                @if ($computer['is_vip'])
+                                    <span class="badge badge-vip">
+                                        <i class="bi bi-star-fill me-1"></i>VIP
+                                    </span>
+                                @else
+                                    <span class="badge bg-secondary text-dark">Обычный</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                Компьютеры не найдены.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 @endsection
