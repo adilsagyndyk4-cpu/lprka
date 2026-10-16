@@ -163,7 +163,11 @@
                 <a class="nav-link" href="{{ route('catalog.stats') }}">
                     <i class="bi bi-graph-up-arrow me-1"></i>Статистика
                 </a>
+                <a class="nav-link text-success" href="{{ route('catalog.create') }}">
+                    <i class="bi bi-plus-circle me-1"></i>Добавить ПК
+                </a>
             </div>
+
             <div class="navbar-nav">
                 <a class="nav-link btn btn-outline-info btn-sm text-info px-3" href="{{ route('feedback.form') }}">
                     <i class="bi bi-chat-dots me-1"></i>Обратная связь
