@@ -1,4 +1,24 @@
-﻿commit fac48b05266ec70df4241703a2995c791c3b981c
+﻿commit 991c6717344510095d923a376a0ab6560769bc22
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:36:18 +0600
+
+    ╨Ы╨Я╨а8-9: ╨│╨╛╤В╨╛╨▓╤Л╨╡ ╨╛╤В╤З╨╡╤В╤Л ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ Word (.docx) ╨╕ ╤Б╨║╤А╨╕╨┐╤В ╨│╨╡╨╜╨╡╤А╨░╤Ж╨╕╨╕
+
+ scripts/create_docx_reports.cjs                    | 363 +++++++++++++++++++++
+ ..._\320\220\320\264\320\270\320\273\321\214.docx" | Bin 0 -> 16807 bytes
+ ..._\320\220\320\264\320\270\320\273\321\214.docx" | Bin 0 -> 19206 bytes
+ 3 files changed, 363 insertions(+)
+
+commit 4f8d9da822dff070bb7a49b0bb9828d4d693dbc3
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:30:05 +0600
+
+    ╨Ы╨Я╨а9: ╤Д╨░╨╣╨╗ ╨╕╤Б╤В╨╛╤А╨╕╨╕ git-log-lpr9.txt
+
+ git-log-lpr9.txt | 261 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 261 insertions(+)
+
+commit fac48b05266ec70df4241703a2995c791c3b981c
 Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
 Date:   2026-10-16 16:29:42 +0600
 
