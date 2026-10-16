@@ -65,6 +65,17 @@
                                 <span class="fs-5 fw-semibold text-light">{{ $computer->cpu }}</span>
                             </div>
                         </div>
+
+                        @if ($computer->description)
+                            <div class="col-12">
+                                <div class="p-3 rounded bg-dark border border-secondary">
+                                    <span class="text-secondary small d-block mb-1">
+                                        <i class="bi bi-card-text me-1"></i>Описание
+                                    </span>
+                                    <span class="text-light">{{ $computer->description }}</span>
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-sm-6">
                             <div class="p-3 rounded bg-dark border border-secondary">
                                 <span class="text-secondary small d-block mb-1">
@@ -90,6 +101,21 @@
                                 <span class="text-light">
                                     {{ $computer->is_vip ? 'Да (премиальное геймерское кресло, топовые мониторы 240Hz и девайсы)' : 'Нет (стандартный игровой зал)' }}
                                 </span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="p-3 rounded bg-dark border border-secondary">
+                                <span class="text-secondary small d-block mb-2">
+                                    <i class="bi bi-controller me-1"></i>Установленные игры (⭐ M:N связь)
+                                </span>
+                                @forelse ($computer->games as $game)
+                                    <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle me-1 mb-1 px-3 py-2">
+                                        <i class="bi bi-joystick me-1"></i>{{ $game->title }} <span class="opacity-75">({{ $game->genre }})</span>
+                                    </span>
+                                @empty
+                                    <span class="text-secondary small">Игры еще не прикреплены к этому ПК</span>
+                                @endforelse
                             </div>
                         </div>
                         <div class="col-12">

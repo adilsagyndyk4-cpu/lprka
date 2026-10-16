@@ -57,6 +57,18 @@
         @enderror
     </div>
 
+    <div class="col-12">
+        <label for="description" class="form-label text-secondary small text-uppercase fw-semibold">
+            <i class="bi bi-card-text me-1"></i>Описание
+        </label>
+        <textarea id="description" name="description" rows="2"
+            class="form-control @error('description') is-invalid @enderror"
+            placeholder="Краткое описание конфигурации или посадочного места...">{{ old('description', $computer->description ?? '') }}</textarea>
+        @error('description')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="col-md-4">
         <label for="ram_gb" class="form-label text-secondary small text-uppercase fw-semibold">
             <i class="bi bi-memory me-1"></i>ОЗУ (ГБ)
@@ -94,4 +106,26 @@
             </label>
         </div>
     </div>
+
+    @if (isset($games) && $games->isNotEmpty())
+        <div class="col-12 mt-3">
+            <label class="form-label text-secondary small text-uppercase fw-semibold d-block">
+                <i class="bi bi-controller me-1"></i>Установленные игры (⭐ M:N связь)
+            </label>
+            <div class="row g-2">
+                @foreach ($games as $game)
+                    <div class="col-md-4 col-sm-6">
+                        <div class="form-check p-2 rounded bg-dark border border-secondary">
+                            <input class="form-check-input ms-1 me-2" type="checkbox" name="games[]" value="{{ $game->id }}" id="game_{{ $game->id }}"
+                                @checked(in_array($game->id, old('games', isset($computer) && $computer->exists ? $computer->games->pluck('id')->toArray() : [])))>
+                            <label class="form-check-label text-white small" for="game_{{ $game->id }}">
+                                {{ $game->title }} <span class="text-secondary">({{ $game->genre }})</span>
+                            </label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>
+

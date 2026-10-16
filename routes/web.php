@@ -12,6 +12,7 @@ Route::prefix('catalog')->name('catalog.')->controller(CatalogController::class)
     Route::get('/create', 'create')->name('create');
     Route::post('/', 'store')->name('store');
     Route::get('/zone/{zone?}', 'byZone')->name('zone');
+    Route::delete('/zone/{zone}', 'destroyZone')->name('zone.destroy');
     Route::get('/code/{code}', 'byCode')
         ->where('code', '[A-Z]{3}-[0-9]{3}')->name('code');
     Route::get('/{computer}', 'show')->whereNumber('computer')->name('show');
