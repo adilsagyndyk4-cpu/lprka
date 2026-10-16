@@ -1,0 +1,261 @@
+﻿commit fac48b05266ec70df4241703a2995c791c3b981c
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:29:42 +0600
+
+    ╨Ы╨Я╨а9 тнР: ╤Б╤Г╤Й╨╜╨╛╤Б╤В╤М Game, M:N ╤Б╨▓╤П╨╖╤М computer_game, ╤З╨╡╨║╨▒╨╛╨║╤Б╤Л ╨╕ sync()
+
+ app/Models/Computer.php                            |   9 ++
+ app/Models/Game.php                                |  25 ++++
+ .../2026_10_16_102243_create_games_table.php       |  27 ++++
+ ...026_10_16_102256_create_computer_game_table.php |  26 ++++
+ database/seeders/DatabaseSeeder.php                | 147 +++++++++++++++++++--
+ 5 files changed, 224 insertions(+), 10 deletions(-)
+
+commit 5560ecf5040543cc3092c729377f944e02a68691
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:29:26 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.6: ╨┐╨╛╨╗╨╜╤Л╨╣ ╤Ж╨╕╨║╨╗ CRUD, ╤Д╨╕╨╗╤М╤В╤А╤Л ╨╕ ╤В╨╡╤Б╤В╤Л Lab9Test
+
+ app/Http/Controllers/CatalogController.php | 144 +++++++++++-------
+ resources/views/catalog/index.blade.php    |  41 +++--
+ tests/Feature/Lab9Test.php                 | 233 +++++++++++++++++++++++++++++
+ 3 files changed, 353 insertions(+), 65 deletions(-)
+
+commit 42f4dfa6bb29014cc03488651af25b16c2968de5
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:29:06 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.5: ╨║╨╗╨░╤Б╤Б ╨▓╨░╨╗╨╕╨┤╨░╤Ж╨╕╨╕ ComputerRequest (MIN_LEN=4, STR_LEN=187) ╨╕ ╤Д╨╛╤А╨╝╤Л
+
+ app/Http/Requests/ComputerRequest.php   | 106 ++++++++++++++++++++++++++++++++
+ resources/views/catalog/_form.blade.php |  34 ++++++++++
+ resources/views/catalog/show.blade.php  |  26 ++++++++
+ resources/views/catalog/zones.blade.php |  35 ++++++++---
+ routes/web.php                          |   1 +
+ 5 files changed, 193 insertions(+), 9 deletions(-)
+
+commit 5c5fe8178db650b3202e2f99c7bfa7e22c63afd6
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:28:46 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.4: ╨┐╨░╨│╨╕╨╜╨░╤Ж╨╕╤П PER_PAGE=4 (Bootstrap 5) ╨╕ eager loading with('zone')
+
+ app/Providers/AppServiceProvider.php | 3 ++-
+ phpunit.xml                          | 4 ++--
+ tests/Feature/Lab8Test.php           | 5 +++--
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+commit b1e0a5597992af53706a2cc1975879bb3b7daf52
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:12:12 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.3: ╨╝╨╕╨│╤А╨░╤Ж╨╕╤П add_description_to_computers_table, STR_LEN=187, ╤Д╨░╨▒╤А╨╕╨║╨╕ ╨╕ ╤Б╨╕╨┤╨╡╤А
+
+ app/Models/Computer.php                            |  1 +
+ database/factories/ComputerFactory.php             |  1 +
+ ...6_100852_add_description_to_computers_table.php | 32 ++++++++++++++++++++++
+ 3 files changed, 34 insertions(+)
+
+commit 7d67b311995b6149014965431ac5803fad8ba003
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:06:19 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.3: Eloquent CRUD ╨║╨╛╨╜╤В╤А╨╛╨╗╨╗╨╡╤А, ╨┐╨░╨│╨╕╨╜╨░╤Ж╨╕╤П PER_PAGE=4, ╨▓╨░╨╗╨╕╨┤╨░╤Ж╨╕╤П, ╤Д╨╛╤А╨╝╤Л create/edit
+
+ app/Http/Controllers/CatalogController.php | 266 +++++++++++++++--------------
+ resources/views/catalog/_form.blade.php    |  97 +++++++++++
+ resources/views/catalog/create.blade.php   |  30 ++++
+ resources/views/catalog/edit.blade.php     |  31 ++++
+ resources/views/catalog/index.blade.php    |  55 ++++--
+ resources/views/catalog/show.blade.php     |  63 ++++---
+ routes/web.php                             |   7 +-
+ 7 files changed, 382 insertions(+), 167 deletions(-)
+
+commit 703e6a05dccba34a185da3392dc83418a11985b3
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:03:47 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.2: ╨╝╨╕╨│╤А╨░╤Ж╨╕╨╕, ╨╝╨╛╨┤╨╡╨╗╨╕ Zone/Computer, ╤Д╨░╨▒╤А╨╕╨║╨╕, ╤Б╨╕╨┤╨╡╤А (SEED=41, PARENTS=5)
+
+ app/Models/Computer.php                            | 39 ++++++++++++++++++++++
+ app/Models/Zone.php                                | 26 +++++++++++++++
+ database/factories/ComputerFactory.php             | 38 +++++++++++++++++++++
+ database/factories/ZoneFactory.php                 | 23 +++++++++++++
+ .../2026_10_16_095349_create_zones_table.php       | 28 ++++++++++++++++
+ .../2026_10_16_095350_create_computers_table.php   | 36 ++++++++++++++++++++
+ database/seeders/DatabaseSeeder.php                | 38 +++++++++++++++------
+ 7 files changed, 217 insertions(+), 11 deletions(-)
+
+commit 853a43ec6967079ce7b4c80df6a022f93c8dd84e
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-16 16:01:55 +0600
+
+    ╨Ы╨Я╨а9 ╨┐.1: ╨┐╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ MySQL (DB=lpr_adils)
+
+ .env.example | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+commit a325d246118bdcb0c1e1fa4503e0f663c07b73cf
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:27:44 +0600
+
+    ╨Ы╨Я╨а8: ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ git-log-lpr8.txt
+
+ git-log-lpr8.txt | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+commit db6cc999b309e26e9cfc8b0e3e5d322d444907de
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:27:43 +0600
+
+    ╨Ы╨Я╨а8: ╨▓╨╕╨╖╤Г╨░╨╗╤М╨╜╨╛╨╡ ╨╛╤Д╨╛╤А╨╝╨╗╨╡╨╜╨╕╨╡ ╨║╨╕╨▒╨╡╤А-╨║╨╗╤Г╨▒╨░
+
+ resources/views/catalog/index.blade.php | 180 +++++++++++++++++++-----------
+ resources/views/catalog/show.blade.php  | 140 +++++++++++++++++-------
+ resources/views/catalog/stats.blade.php |  67 +++++++-----
+ resources/views/catalog/zones.blade.php |  26 +++--
+ resources/views/errors/404.blade.php    |  33 ++++--
+ resources/views/feedback.blade.php      |  47 +++++---
+ resources/views/layouts/app.blade.php   | 187 +++++++++++++++++++++++++++++---
+ 7 files changed, 497 insertions(+), 183 deletions(-)
+
+commit 6f153a9f6c6ad7b4662db479c4b78ad46efdc642
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:03:54 +0600
+
+    ╨Ы╨Я╨а8: ╤Д╨░╨╣╨╗ ╨╕╤Б╤В╨╛╤А╨╕╨╕ git-log-lpr8.txt
+
+ git-log-lpr8.txt | 130 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 130 insertions(+)
+
+commit 04d8030f6d6ea98b803102efea6ad94b222a4daf
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:03:31 +0600
+
+    ╨Ы╨Я╨а8: ╤В╨╡╤Б╤В╤Л ╨╕ ╨╛╤В╤З╨╡╤В
+
+ REPORT.md                     | 154 ++++++++++++++++++++++++++++++++++++++++++
+ tests/Feature/ExampleTest.php |   6 +-
+ 2 files changed, 158 insertions(+), 2 deletions(-)
+
+commit 93b37628c346ad571cda48eef2891844055c96c1
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:01:02 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.6: POST-╤Д╨╛╤А╨╝╨░
+
+ resources/views/feedback.blade.php |  23 ++++++++
+ tests/Feature/Lab8Test.php         | 114 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 137 insertions(+)
+
+commit bdfeebc590c33da804cd7ac71abf3b61f940c865
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 02:00:13 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.5: Blade-╤И╨░╨▒╨╗╨╛╨╜╤Л
+
+ resources/views/catalog/index.blade.php | 75 +++++++++++++++++++++++++++++++++
+ resources/views/catalog/show.blade.php  | 54 ++++++++++++++++++++++++
+ resources/views/catalog/stats.blade.php | 63 +++++++++++++++++++++++++++
+ resources/views/catalog/zones.blade.php | 28 ++++++++++++
+ resources/views/errors/404.blade.php    | 20 +++++++++
+ resources/views/layouts/app.blade.php   | 39 +++++++++++++++++
+ 6 files changed, 279 insertions(+)
+
+commit 7ad281ee848bddf831060473e641b97974214210
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 01:58:59 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.4: ╨║╨╛╨╜╤В╤А╨╛╨╗╨╗╨╡╤А ╨║╨░╤В╨░╨╗╨╛╨│╨░
+
+ app/Http/Controllers/CatalogController.php | 196 +++++++++++++++++++++++++++++
+ app/Http/Controllers/PageController.php    |  23 ++++
+ routes/web.php                             |  16 ++-
+ 3 files changed, 233 insertions(+), 2 deletions(-)
+
+commit a518bfebb4e1ed84c5580a59909bb638e2efa163
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 01:57:22 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.3: ╨╝╨░╤А╤И╤А╤Г╤В ╤Б ╨┐╨░╤А╨░╨╝╨╡╤В╤А╨╛╨╝
+
+ routes/web.php | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit cda47fc8063654519c8977470b395ef03fac313c
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 01:55:42 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.2: ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ .env ╨╕ config/lab.php
+
+ .env.example   | 10 ++++++++--
+ config/lab.php |  9 +++++++++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+commit fee6b2d8d21ccacd402dc8baf9463e986832403c
+Author: ╨Р╨┤╨╕╨╗╤М <adils@example.com>
+Date:   2026-10-12 01:54:23 +0600
+
+    ╨Ы╨Я╨а8 ╨┐.1: ╤Г╤Б╤В╨░╨╜╨╛╨▓╨║╨░ Laravel
+
+ .editorconfig                                      |   18 +
+ .env.example                                       |   65 +
+ .gitattributes                                     |   11 +
+ .gitignore                                         |   27 +
+ .npmrc                                             |    2 +
+ AGENTS.md                                          |   47 +
+ CLAUDE.md                                          |   47 +
+ README.md                                          |   58 +
+ app/Http/Controllers/Controller.php                |    8 +
+ app/Models/User.php                                |   32 +
+ app/Providers/AppServiceProvider.php               |   24 +
+ artisan                                            |   18 +
+ bootstrap/app.php                                  |   21 +
+ bootstrap/cache/.gitignore                         |    2 +
+ bootstrap/providers.php                            |    7 +
+ composer.json                                      |   87 +
+ composer.lock                                      | 8737 ++++++++++++++++++++
+ config/app.php                                     |  126 +
+ config/auth.php                                    |  117 +
+ config/cache.php                                   |  136 +
+ config/database.php                                |  184 +
+ config/filesystems.php                             |   80 +
+ config/logging.php                                 |  140 +
+ config/mail.php                                    |  118 +
+ config/queue.php                                   |  129 +
+ config/services.php                                |   38 +
+ config/session.php                                 |  233 +
+ database/.gitignore                                |    1 +
+ database/factories/UserFactory.php                 |   45 +
+ .../0001_01_01_000000_create_users_table.php       |   49 +
+ .../0001_01_01_000001_create_cache_table.php       |   35 +
+ .../0001_01_01_000002_create_jobs_table.php        |   59 +
+ database/seeders/DatabaseSeeder.php                |   25 +
+ package.json                                       |   19 +
+ phpunit.xml                                        |   36 +
+ public/.htaccess                                   |   25 +
+ public/favicon.ico                                 |    0
+ public/index.php                                   |   20 +
+ public/robots.txt                                  |    2 +
+ resources/css/app.css                              |    9 +
+ resources/js/app.js                                |    1 +
+ resources/views/welcome.blade.php                  |  223 +
+ routes/console.php                                 |    8 +
+ routes/web.php                                     |    7 +
+ storage/app/.gitignore                             |    4 +
+ storage/app/private/.gitignore                     |    2 +
+ storage/app/public/.gitignore                      |    2 +
+ storage/framework/.gitignore                       |   10 +
+ storage/framework/cache/.gitignore                 |    4 +
+ storage/framework/cache/data/.gitignore            |    2 +
+ storage/framework/cache/locks/.gitignore           |    2 +
+ storage/framework/sessions/.gitignore              |    2 +
+ storage/framework/testing/.gitignore               |    2 +
+ storage/framework/views/.gitignore                 |    2 +
+ storage/logs/.gitignore                            |    2 +
+ tests/Feature/ExampleTest.php                      |   19 +
+ tests/TestCase.php                                 |   10 +
+ tests/Unit/ExampleTest.php                         |   16 +
+ vite.config.js                                     |   24 +
+ 59 files changed, 11179 insertions(+)
