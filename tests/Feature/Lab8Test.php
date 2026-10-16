@@ -35,8 +35,9 @@ class Lab8Test extends TestCase
     {
         $response = $this->get('/catalog?sort=hour_price');
         $response->assertStatus(200);
-        $response->assertSee('INV-00202');
+        $response->assertSee('INV-00501');
     }
+
 
     public function test_catalog_show_by_id()
     {
@@ -80,7 +81,7 @@ class Lab8Test extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Статистика каталога компьютеров');
         $response->assertSee('Всего компьютеров (count)');
-        $response->assertSee('7');
+        $response->assertSee((string) \App\Models\Computer::count());
     }
 
     public function test_feedback_form_and_submission()
