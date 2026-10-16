@@ -19,6 +19,7 @@ class ComputerFactory extends Factory
         return [
             'code'             => $code,
             'inventory_number' => 'INV-' . fake()->unique()->numerify('#####'),
+            'description'      => fake()->optional()->realText(120),
             'zone_id'          => Zone::factory(),
             'cpu'              => fake()->randomElement([
                 'Intel Core i9-14900KF',

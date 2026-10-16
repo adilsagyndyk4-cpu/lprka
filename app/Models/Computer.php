@@ -13,6 +13,7 @@ class Computer extends Model
     protected $fillable = [
         'code',
         'inventory_number',
+        'description',
         'zone_id',
         'cpu',
         'ram_gb',
