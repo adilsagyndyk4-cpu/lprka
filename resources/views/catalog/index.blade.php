@@ -7,6 +7,9 @@
             <p class="text-secondary small mb-0">Каталог игровых мест киберспортивного клуба с актуальными конфигурациями</p>
         </div>
         <div class="d-flex gap-2">
+            <a href="{{ route('catalog.create') }}" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-circle me-1"></i>Добавить ПК
+            </a>
             <a href="{{ route('catalog.zone') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-grid me-1"></i>Все зоны
             </a>
@@ -34,8 +37,8 @@
                     </span>
                     <select name="sort" class="form-select">
                         <option value="inventory_number" @selected($sort === 'inventory_number')>По инвентарному номеру (А-Я)</option>
-                        <option value="ram_gb" @selected($sort === 'ram_gb')>По объему RAM (по возрастанию)</option>
-                        <option value="hour_price" @selected($sort === 'hour_price')>По цене за час (по возрастанию)</option>
+                        <option value="ram_gb" @selected($sort === 'ram_gb')>По объему RAM</option>
+                        <option value="hour_price" @selected($sort === 'hour_price')>По цене за час</option>
                     </select>
                 </div>
             </div>
@@ -65,43 +68,46 @@
                         <th>ОЗУ</th>
                         <th>Цена в час</th>
                         <th class="text-center">Категория</th>
+                        <th class="text-center">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($computers as $computer)
                         <tr>
-                            <td class="text-center text-secondary small">{{ $loop->iteration }}</td>
+                            <td class="text-center text-secondary small">{{ $computers->firstItem() + $loop->index }}</td>
                             <td>
-                                <a href="{{ route('catalog.show', ['id' => $computer['id']]) }}" class="text-info fw-bold text-decoration-none">
-                                    {{ $computer['inventory_number'] }}
+                                <a href="{{ route('catalog.show', $computer) }}" class="text-info fw-bold text-decoration-none">
+                                    {{ $computer->inventory_number }}
                                 </a>
                                 <span class="badge bg-dark border border-secondary text-secondary font-monospace ms-1 small">
-                                    {{ $computer['code'] }}
+                                    {{ $computer->code }}
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('catalog.zone', ['zone' => $computer['zone']]) }}" class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle text-decoration-none">
-                                    <i class="bi bi-geo-alt me-1"></i>{{ $computer['zone'] }} (эт. {{ $computer['floor'] }})
-                                </a>
+                                @if ($computer->zone)
+                                    <a href="{{ route('catalog.zone', $computer->zone) }}" class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle text-decoration-none">
+                                        <i class="bi bi-geo-alt me-1"></i>{{ $computer->zone->name }} (эт. {{ $computer->zone->floor }})
+                                    </a>
+                                @endif
                             </td>
                             <td>
                                 <span class="text-light">
-                                    <i class="bi bi-cpu text-secondary me-1"></i>{{ $computer['cpu'] }}
+                                    <i class="bi bi-cpu text-secondary me-1"></i>{{ $computer->cpu }}
                                 </span>
                             </td>
                             <td>
                                 <span class="badge bg-secondary-subtle text-secondary-emphasis">
-                                    <i class="bi bi-memory me-1"></i>{{ $computer['ram_gb'] }} ГБ
+                                    <i class="bi bi-memory me-1"></i>{{ $computer->ram_gb }} ГБ
                                 </span>
                             </td>
                             <td>
                                 <span class="fw-bold text-success">
-                                    {{ number_format($computer['hour_price'], 2, ',', ' ') }} ₽
+                                    {{ number_format($computer->hour_price, 2, ',', ' ') }} ₽
                                 </span>
                                 <span class="text-secondary small">/ч</span>
                             </td>
                             <td class="text-center">
-                                @if ($computer['is_vip'])
+                                @if ($computer->is_vip)
                                     <span class="badge badge-vip">
                                         <i class="bi bi-star-fill me-1"></i>VIP
                                     </span>
@@ -109,10 +115,24 @@
                                     <span class="badge bg-secondary text-dark">Обычный</span>
                                 @endif
                             </td>
+                            <td class="text-center">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a href="{{ route('catalog.edit', $computer) }}" class="btn btn-outline-warning btn-sm" title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="POST" action="{{ route('catalog.destroy', $computer) }}" onsubmit="return confirm('Удалить {{ $computer->inventory_number }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Удалить">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
+                            <td colspan="8" class="text-center text-muted py-5">
                                 <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
                                 Компьютеры не найдены.
                             </td>
@@ -122,4 +142,11 @@
             </table>
         </div>
     </div>
+
+    <!-- Пагинация PER_PAGE = 4 -->
+    @if ($computers->hasPages())
+        <div class="d-flex justify-content-center mt-4">
+            {{ $computers->links() }}
+        </div>
+    @endif
 @endsection

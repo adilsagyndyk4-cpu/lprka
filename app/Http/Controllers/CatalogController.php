@@ -2,194 +2,204 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Computer;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
     /**
-     * Временное статическое хранилище компьютеров (ЛПР № 8)
+     * Количество записей на одной странице пагинации.
+     * PER_PAGE = 3 + (29 mod 4) = 4.
      */
-    private function computers(): array
-    {
-        return [
-            [
-                'id' => 1,
-                'code' => 'VIP-101',
-                'inventory_number' => 'INV-00101',
-                'zone' => 'VIP Lounge',
-                'floor' => 2,
-                'cpu' => 'Intel Core i9-14900KF',
-                'ram_gb' => 64,
-                'hour_price' => 350.00,
-                'is_vip' => true,
-            ],
-            [
-                'id' => 2,
-                'code' => 'VIP-102',
-                'inventory_number' => 'INV-00102',
-                'zone' => 'VIP Lounge',
-                'floor' => 2,
-                'cpu' => 'Intel Core i9-14900KF',
-                'ram_gb' => 64,
-                'hour_price' => 350.00,
-                'is_vip' => true,
-            ],
-            [
-                'id' => 3,
-                'code' => 'VIP-103',
-                'inventory_number' => 'INV-00103',
-                'zone' => 'VIP Lounge',
-                'floor' => 2,
-                'cpu' => 'AMD Ryzen 9 7950X3D',
-                'ram_gb' => 64,
-                'hour_price' => 380.00,
-                'is_vip' => true,
-            ],
-            [
-                'id' => 4,
-                'code' => 'STD-201',
-                'inventory_number' => 'INV-00201',
-                'zone' => 'Общий зал',
-                'floor' => 1,
-                'cpu' => 'Intel Core i5-13400F',
-                'ram_gb' => 16,
-                'hour_price' => 150.00,
-                'is_vip' => false,
-            ],
-            [
-                'id' => 5,
-                'code' => 'STD-202',
-                'inventory_number' => 'INV-00202',
-                'zone' => 'Общий зал',
-                'floor' => 1,
-                'cpu' => 'AMD Ryzen 5 5600X',
-                'ram_gb' => 16,
-                'hour_price' => 140.00,
-                'is_vip' => false,
-            ],
-            [
-                'id' => 6,
-                'code' => 'BTC-301',
-                'inventory_number' => 'INV-00301',
-                'zone' => 'Bootcamp',
-                'floor' => 2,
-                'cpu' => 'Intel Core i7-14700K',
-                'ram_gb' => 32,
-                'hour_price' => 250.00,
-                'is_vip' => false,
-            ],
-            [
-                'id' => 7,
-                'code' => 'BTC-302',
-                'inventory_number' => 'INV-00302',
-                'zone' => 'Bootcamp',
-                'floor' => 2,
-                'cpu' => 'Intel Core i7-14700K',
-                'ram_gb' => 32,
-                'hour_price' => 250.00,
-                'is_vip' => false,
-            ],
-        ]; // ровно ITEMS = 7 записей
-    }
+    private const PER_PAGE = 4;
 
-    // GET /catalog?q=...&sort=...
+    /**
+     * GET /catalog — список компьютеров с поиском, сортировкой и пагинацией.
+     */
     public function index(Request $request)
     {
-        $computers = collect($this->computers());
+        $query = Computer::with('zone');
         $search = $request->query('q');
 
         if ($search) {
-            $computers = $computers->filter(function ($item) use ($search) {
-                return mb_stripos($item['inventory_number'], $search) !== false
-                    || mb_stripos($item['cpu'], $search) !== false
-                    || mb_stripos($item['code'], $search) !== false;
+            $query->where(function ($q) use ($search) {
+                $q->where('inventory_number', 'like', "%{$search}%")
+                  ->orWhere('cpu', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
             });
         }
 
+        // Сортировка (N нечётный: по умолчанию по inventory_number А->Я)
         $sort = $request->query('sort', 'inventory_number');
+        $direction = $request->query('dir', 'asc');
+
         if (in_array($sort, ['inventory_number', 'ram_gb', 'hour_price'])) {
-            $computers = $computers->sortBy($sort);
+            $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
         }
 
+        $computers = $query->paginate(self::PER_PAGE)->withQueryString();
+
         return view('catalog.index', [
-            'title' => 'Каталог компьютеров',
+            'title'     => 'Каталог компьютеров',
             'computers' => $computers,
-            'search' => $search,
-            'sort' => $sort,
+            'search'    => $search,
+            'sort'      => $sort,
         ]);
     }
 
-    // ⭐ GET /catalog/stats (повышенный уровень 1)
+    /**
+     * GET /catalog/create — форма создания нового компьютера.
+     */
+    public function create()
+    {
+        $zones = Zone::orderBy('name')->get();
+
+        return view('catalog.create', [
+            'title' => 'Добавить компьютер',
+            'zones' => $zones,
+        ]);
+    }
+
+    /**
+     * POST /catalog — сохранение нового компьютера в БД.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code'             => ['required', 'string', 'regex:/^[A-Z]{3}-[0-9]{3}$/', 'unique:computers,code'],
+            'inventory_number' => ['required', 'string', 'min:4', 'max:20', 'unique:computers,inventory_number'],
+            'zone_id'          => ['required', 'exists:zones,id'],
+            'cpu'              => ['required', 'string', 'min:4', 'max:187'],
+            'ram_gb'           => ['required', 'integer', 'min:1', 'max:512'],
+            'hour_price'       => ['required', 'numeric', 'min:0', 'max:999999.99'],
+            'is_vip'           => ['sometimes', 'boolean'],
+        ]);
+
+        $validated['is_vip'] = $request->boolean('is_vip');
+        Computer::create($validated);
+
+        return redirect()->route('catalog.index')
+            ->with('status', "Компьютер {$validated['inventory_number']} успешно добавлен!");
+    }
+
+    /**
+     * GET /catalog/{id}/edit — форма редактирования компьютера.
+     */
+    public function edit(Computer $computer)
+    {
+        $zones = Zone::orderBy('name')->get();
+
+        return view('catalog.edit', [
+            'title'    => "Редактировать: {$computer->inventory_number}",
+            'computer' => $computer,
+            'zones'    => $zones,
+        ]);
+    }
+
+    /**
+     * PUT /catalog/{id} — обновление компьютера в БД.
+     */
+    public function update(Request $request, Computer $computer)
+    {
+        $validated = $request->validate([
+            'code'             => ['required', 'string', 'regex:/^[A-Z]{3}-[0-9]{3}$/', "unique:computers,code,{$computer->id}"],
+            'inventory_number' => ['required', 'string', 'min:4', 'max:20', "unique:computers,inventory_number,{$computer->id}"],
+            'zone_id'          => ['required', 'exists:zones,id'],
+            'cpu'              => ['required', 'string', 'min:4', 'max:187'],
+            'ram_gb'           => ['required', 'integer', 'min:1', 'max:512'],
+            'hour_price'       => ['required', 'numeric', 'min:0', 'max:999999.99'],
+            'is_vip'           => ['sometimes', 'boolean'],
+        ]);
+
+        $validated['is_vip'] = $request->boolean('is_vip');
+        $computer->update($validated);
+
+        return redirect()->route('catalog.show', $computer)
+            ->with('status', "Компьютер {$computer->inventory_number} обновлен!");
+    }
+
+    /**
+     * DELETE /catalog/{id} — удаление компьютера из БД.
+     */
+    public function destroy(Computer $computer)
+    {
+        $inv = $computer->inventory_number;
+        $computer->delete();
+
+        return redirect()->route('catalog.index')
+            ->with('status', "Компьютер {$inv} удален!");
+    }
+
+    /**
+     * ⭐ GET /catalog/stats — агрегированная статистика.
+     */
     public function stats()
     {
-        $computers = collect($this->computers());
-        $count = $computers->count();
-        $avgPrice = round($computers->avg('hour_price'), 2);
-        $minPrice = $computers->min('hour_price');
-        $maxPrice = $computers->max('hour_price');
-        $avgRam = round($computers->avg('ram_gb'), 1);
+        $count    = Computer::count();
+        $avgPrice = round(Computer::avg('hour_price'), 2);
+        $minPrice = Computer::min('hour_price');
+        $maxPrice = Computer::max('hour_price');
+        $avgRam   = round(Computer::avg('ram_gb'), 1);
 
         return view('catalog.stats', [
-            'title' => 'Статистика каталога компьютеров',
-            'count' => $count,
+            'title'    => 'Статистика каталога компьютеров',
+            'count'    => $count,
             'avgPrice' => $avgPrice,
             'minPrice' => $minPrice,
             'maxPrice' => $maxPrice,
-            'avgRam' => $avgRam,
+            'avgRam'   => $avgRam,
         ]);
     }
 
-    // GET /catalog/zone/{zone?}
-    // ⭐ повышенный уровень 2: без параметра выводит список зон
-    public function byZone(?string $zone = null)
+    /**
+     * ⭐ GET /catalog/zone/{zone?} — фильтрация по зонам.
+     */
+    public function byZone(?Zone $zone = null)
     {
-        $all = collect($this->computers());
-
         if (! $zone) {
-            $zones = $all->map(function ($item) {
-                return [
-                    'name' => $item['zone'],
-                    'floor' => $item['floor'],
-                ];
-            })->unique('name')->values();
+            $zones = Zone::withCount('computers')->orderBy('name')->get();
 
             return view('catalog.zones', [
                 'title' => 'Все зоны клуба',
                 'zones' => $zones,
-                'allCount' => $all->count(),
             ]);
         }
 
-        $computers = $all->where('zone', $zone);
+        $computers = Computer::where('zone_id', $zone->id)
+            ->orderBy('inventory_number')
+            ->paginate(self::PER_PAGE);
 
         return view('catalog.index', [
-            'title' => "Компьютеры зоны: {$zone}",
+            'title'     => "Компьютеры зоны: {$zone->name}",
             'computers' => $computers,
-            'search' => null,
-            'sort' => 'inventory_number',
+            'search'    => null,
+            'sort'      => 'inventory_number',
         ]);
     }
 
-    // GET /catalog/code/{code}
+    /**
+     * GET /catalog/code/{code} — поиск по коду.
+     */
     public function byCode(string $code)
     {
-        $computer = collect($this->computers())->firstWhere('code', $code);
-        abort_if(! $computer, 404);
+        $computer = Computer::with('zone')->where('code', $code)->firstOrFail();
 
         return view('catalog.show', [
-            'title' => "Компьютер {$computer['inventory_number']} ({$computer['code']})",
+            'title'    => "Компьютер {$computer->inventory_number} ({$computer->code})",
             'computer' => $computer,
         ]);
     }
 
-    // GET /catalog/{id}
-    public function show(int $id)
+    /**
+     * GET /catalog/{computer} — карточка компьютера.
+     */
+    public function show(Computer $computer)
     {
-        $computer = collect($this->computers())->firstWhere('id', $id);
-        abort_if(! $computer, 404);
+        $computer->load('zone');
 
         return view('catalog.show', [
-            'title' => "Компьютер {$computer['inventory_number']}",
+            'title'    => "Компьютер {$computer->inventory_number}",
             'computer' => $computer,
         ]);
     }
