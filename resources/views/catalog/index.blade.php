@@ -22,38 +22,59 @@
     <!-- Фильтр и поиск -->
     <div class="card card-cyber p-3 mb-4">
         <form method="GET" action="{{ route('catalog.index') }}" class="row g-2 align-items-center">
-            <div class="col-lg-5 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-secondary">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" name="q" value="{{ $search }}" class="form-control" placeholder="Поиск по инв. номеру, CPU или коду...">
+                    <input type="text" name="q" value="{{ $search }}" class="form-control" placeholder="Поиск (инв. №, CPU, код)...">
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">
+                        <i class="bi bi-geo-alt"></i>
+                    </span>
+                    <select name="zone_id" class="form-select">
+                        <option value="">Все зоны</option>
+                        @foreach ($zones as $zone)
+                            <option value="{{ $zone->id }}" @selected($zoneId == $zone->id)>{{ $zone->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <select name="is_vip" class="form-select">
+                    <option value="">Все категории</option>
+                    <option value="1" @selected($isVip === '1')>Только VIP</option>
+                    <option value="0" @selected($isVip === '0')>Только Обычные</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4">
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-secondary">
                         <i class="bi bi-arrow-down-up"></i>
                     </span>
                     <select name="sort" class="form-select">
-                        <option value="inventory_number" @selected($sort === 'inventory_number')>По инвентарному номеру (А-Я)</option>
-                        <option value="ram_gb" @selected($sort === 'ram_gb')>По объему RAM</option>
-                        <option value="hour_price" @selected($sort === 'hour_price')>По цене за час</option>
+                        <option value="inventory_number" @selected($sort === 'inventory_number')>Инв. номер</option>
+                        <option value="ram_gb" @selected($sort === 'ram_gb')>ОЗУ</option>
+                        <option value="hour_price" @selected($sort === 'hour_price')>Цена часа</option>
                     </select>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-2 d-flex gap-2">
+            <div class="col-lg-2 col-md-4 d-flex gap-2">
                 <button type="submit" class="btn btn-cyber-primary flex-grow-1">
-                    <i class="bi bi-funnel me-1"></i>Найти
+                    <i class="bi bi-funnel me-1"></i>Фильтр
                 </button>
-                @if ($search || $sort !== 'inventory_number')
-                    <a href="{{ route('catalog.index') }}" class="btn btn-outline-secondary" title="Сбросить фильтр">
+                @if ($search || $zoneId || $isVip !== null && $isVip !== '' || $sort !== 'inventory_number')
+                    <a href="{{ route('catalog.index') }}" class="btn btn-outline-secondary" title="Сбросить все фильтры">
                         <i class="bi bi-x-lg"></i>
                     </a>
                 @endif
             </div>
         </form>
     </div>
+
 
     <!-- Таблица ПК -->
     <div class="card card-cyber overflow-hidden">

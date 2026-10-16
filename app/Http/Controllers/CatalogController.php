@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ComputerRequest;
 use App\Models\Computer;
 use App\Models\Zone;
 use Illuminate\Http\Request;
@@ -15,13 +16,15 @@ class CatalogController extends Controller
     private const PER_PAGE = 4;
 
     /**
-     * GET /catalog — список компьютеров с поиском, сортировкой и пагинацией.
+     * GET /catalog — список компьютеров с пагинацией, поиском и фильтрами.
+     * ⭐ Задание повышенного уровня 1: фильтр по родителю (?zone_id=) и логическому полю (?is_vip=).
      */
     public function index(Request $request)
     {
-        $query = Computer::with('zone');
-        $search = $request->query('q');
+        $query = Computer::with('zone'); // Eager loading связи
 
+        // Поиск по q
+        $search = $request->query('q');
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('inventory_number', 'like', "%{$search}%")
@@ -30,21 +33,37 @@ class CatalogController extends Controller
             });
         }
 
-        // Сортировка (N нечётный: по умолчанию по inventory_number А->Я)
-        $sort = $request->query('sort', 'inventory_number');
-        $direction = $request->query('dir', 'asc');
+        // ⭐ Фильтр по родителю (zone_id)
+        $zoneId = $request->query('zone_id');
+        if ($zoneId) {
+            $query->where('zone_id', $zoneId);
+        }
 
+        // ⭐ Фильтр по логическому полю (is_vip)
+        $isVip = $request->query('is_vip');
+        if ($isVip !== null && $isVip !== '') {
+            $query->where('is_vip', (bool) $isVip);
+        }
+
+        // Сортировка: N нечётный (29) → по основному строковому полю А→Я (inventory_number)
+        $sort = $request->query('sort', 'inventory_number');
         if (in_array($sort, ['inventory_number', 'ram_gb', 'hour_price'])) {
-            $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+            $query->orderBy($sort, 'asc');
+        } else {
+            $query->orderBy('inventory_number', 'asc');
         }
 
         $computers = $query->paginate(self::PER_PAGE)->withQueryString();
+        $zones = Zone::orderBy('name')->get();
 
         return view('catalog.index', [
             'title'     => 'Каталог компьютеров',
             'computers' => $computers,
+            'zones'     => $zones,
             'search'    => $search,
             'sort'      => $sort,
+            'zoneId'    => $zoneId,
+            'isVip'     => $isVip,
         ]);
     }
 
@@ -54,73 +73,62 @@ class CatalogController extends Controller
     public function create()
     {
         $zones = Zone::orderBy('name')->get();
+        $games = \App\Models\Game::orderBy('title')->get();
 
         return view('catalog.create', [
-            'title' => 'Добавить компьютер',
-            'zones' => $zones,
+            'title'    => 'Добавить компьютер',
+            'computer' => new Computer(),
+            'zones'    => $zones,
+            'games'    => $games,
         ]);
     }
 
     /**
-     * POST /catalog — сохранение нового компьютера в БД.
+     * POST /catalog — сохранение нового компьютера в БД с валидацией.
      */
-    public function store(Request $request)
+    public function store(ComputerRequest $request)
     {
-        $validated = $request->validate([
-            'code'             => ['required', 'string', 'regex:/^[A-Z]{3}-[0-9]{3}$/', 'unique:computers,code'],
-            'inventory_number' => ['required', 'string', 'min:4', 'max:20', 'unique:computers,inventory_number'],
-            'zone_id'          => ['required', 'exists:zones,id'],
-            'cpu'              => ['required', 'string', 'min:4', 'max:187'],
-            'ram_gb'           => ['required', 'integer', 'min:1', 'max:512'],
-            'hour_price'       => ['required', 'numeric', 'min:0', 'max:999999.99'],
-            'is_vip'           => ['sometimes', 'boolean'],
-        ]);
-
-        $validated['is_vip'] = $request->boolean('is_vip');
-        Computer::create($validated);
+        $computer = Computer::create($request->validated());
+        if ($request->has('games')) {
+            $computer->games()->sync($request->input('games'));
+        }
 
         return redirect()->route('catalog.index')
-            ->with('status', "Компьютер {$validated['inventory_number']} успешно добавлен!");
+            ->with('status', "Добавлено: {$computer->inventory_number} (id {$computer->id})");
     }
 
     /**
-     * GET /catalog/{id}/edit — форма редактирования компьютера.
+     * GET /catalog/{computer}/edit — форма редактирования компьютера.
      */
     public function edit(Computer $computer)
     {
+        $computer->load('games');
         $zones = Zone::orderBy('name')->get();
+        $games = \App\Models\Game::orderBy('title')->get();
 
         return view('catalog.edit', [
-            'title'    => "Редактировать: {$computer->inventory_number}",
+            'title'    => "Редактирование: {$computer->inventory_number}",
             'computer' => $computer,
             'zones'    => $zones,
+            'games'    => $games,
         ]);
     }
 
     /**
-     * PUT /catalog/{id} — обновление компьютера в БД.
+     * PUT /catalog/{computer} — обновление компьютера в БД с валидацией.
      */
-    public function update(Request $request, Computer $computer)
+    public function update(ComputerRequest $request, Computer $computer)
     {
-        $validated = $request->validate([
-            'code'             => ['required', 'string', 'regex:/^[A-Z]{3}-[0-9]{3}$/', "unique:computers,code,{$computer->id}"],
-            'inventory_number' => ['required', 'string', 'min:4', 'max:20', "unique:computers,inventory_number,{$computer->id}"],
-            'zone_id'          => ['required', 'exists:zones,id'],
-            'cpu'              => ['required', 'string', 'min:4', 'max:187'],
-            'ram_gb'           => ['required', 'integer', 'min:1', 'max:512'],
-            'hour_price'       => ['required', 'numeric', 'min:0', 'max:999999.99'],
-            'is_vip'           => ['sometimes', 'boolean'],
-        ]);
+        $computer->update($request->validated());
+        $computer->games()->sync($request->input('games', []));
 
-        $validated['is_vip'] = $request->boolean('is_vip');
-        $computer->update($validated);
-
-        return redirect()->route('catalog.show', $computer)
-            ->with('status', "Компьютер {$computer->inventory_number} обновлен!");
+        return redirect()->route('catalog.index')
+            ->with('status', "Изменения сохранены для {$computer->inventory_number}.");
     }
 
+
     /**
-     * DELETE /catalog/{id} — удаление компьютера из БД.
+     * DELETE /catalog/{computer} — удаление компьютера из БД.
      */
     public function destroy(Computer $computer)
     {
@@ -128,11 +136,11 @@ class CatalogController extends Controller
         $computer->delete();
 
         return redirect()->route('catalog.index')
-            ->with('status', "Компьютер {$inv} удален!");
+            ->with('status', "Удалено: {$inv}");
     }
 
     /**
-     * ⭐ GET /catalog/stats — агрегированная статистика.
+     * ⭐ GET /catalog/stats — агрегированная статистика по коллекции / БД.
      */
     public function stats()
     {
@@ -153,9 +161,9 @@ class CatalogController extends Controller
     }
 
     /**
-     * ⭐ GET /catalog/zone/{zone?} — фильтрация по зонам.
+     * ⭐ GET /catalog/zone/{zone?} — список зон клуба или компьютеры зоны.
      */
-    public function byZone(?Zone $zone = null)
+    public function byZone(string|Zone|null $zone = null)
     {
         if (! $zone) {
             $zones = Zone::withCount('computers')->orderBy('name')->get();
@@ -166,24 +174,50 @@ class CatalogController extends Controller
             ]);
         }
 
-        $computers = Computer::where('zone_id', $zone->id)
-            ->orderBy('inventory_number')
-            ->paginate(self::PER_PAGE);
+        $zoneModel = is_string($zone)
+            ? (is_numeric($zone) ? Zone::find($zone) : Zone::where('name', $zone)->first())
+            : $zone;
+
+        abort_if(! $zoneModel, 404);
+
+        $computers = Computer::with('zone')
+            ->where('zone_id', $zoneModel->id)
+            ->orderBy('inventory_number', 'asc')
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        $zones = Zone::orderBy('name')->get();
 
         return view('catalog.index', [
-            'title'     => "Компьютеры зоны: {$zone->name}",
+            'title'     => "Компьютеры зоны: {$zoneModel->name}",
             'computers' => $computers,
+            'zones'     => $zones,
             'search'    => null,
             'sort'      => 'inventory_number',
+            'zoneId'    => $zoneModel->id,
+            'isVip'     => null,
         ]);
     }
 
     /**
-     * GET /catalog/code/{code} — поиск по коду.
+     * ⭐ DELETE /catalog/zone/{zone} — каскадное удаление зоны с предупреждением.
+     */
+    public function destroyZone(Zone $zone)
+    {
+        $count = $zone->computers()->count();
+        $name = $zone->name;
+        $zone->delete(); // Благодаря cascadeOnDelete удалятся и все компьютеры
+
+        return redirect()->route('catalog.zone')
+            ->with('status', "Зона «{$name}» и связанные с ней компьютеры ({$count} шт.) удалены по правилу CASCADE!");
+    }
+
+    /**
+     * GET /catalog/code/{code} — просмотр по коду.
      */
     public function byCode(string $code)
     {
-        $computer = Computer::with('zone')->where('code', $code)->firstOrFail();
+        $computer = Computer::with(['zone', 'games'])->where('code', $code)->firstOrFail();
 
         return view('catalog.show', [
             'title'    => "Компьютер {$computer->inventory_number} ({$computer->code})",
@@ -192,11 +226,11 @@ class CatalogController extends Controller
     }
 
     /**
-     * GET /catalog/{computer} — карточка компьютера.
+     * GET /catalog/{computer} — детальная карточка компьютера.
      */
     public function show(Computer $computer)
     {
-        $computer->load('zone');
+        $computer->load(['zone', 'games']);
 
         return view('catalog.show', [
             'title'    => "Компьютер {$computer->inventory_number}",
