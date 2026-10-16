@@ -37,4 +37,13 @@ class Computer extends Model
     {
         return $this->belongsTo(Zone::class);
     }
+
+    /**
+     * ⭐ Связь «многие-ко-многим»: на компьютере установлено много игр.
+     */
+    public function games(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Game::class);
+    }
 }
+
